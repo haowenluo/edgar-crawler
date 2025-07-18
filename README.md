@@ -2,16 +2,17 @@
 ![EDGAR-CRAWLER-LOGO](images/edgar-crawler-logo-white-bg.jpeg)
 
 
-**EDGAR-CRAWLER** is the only open-source toolkit that **downloads** **raw** and unstructured financial **SEC filings** from EDGAR and converts them **into** **structured JSON files** in order to **bootstrap financial NLP** experiments.
+**EDGAR-CRAWLER** is the only open-source toolkit that **downloads** **raw** and unstructured financial **SEC filings** from EDGAR and parses them **into** **structured JSON files** in order to **bootstrap financial NLP** experiments.
 
 ---
 
 **EDGAR-CRAWLER** has 2 core functionalities:
 - 📥 **Seamless downloading**: Retrieve and download financial filings from all US publicly-traded companies based on your specified filters, like year, quarters, filing type, etc.
-- 🔍 **Structured JSON output**: Extract and parse specific key sections from 10-K, 10-Q, and 8-K filings into a nice-and-easy standardized JSON format.  *(filings supported: 10-K, 10-Q, 8-K)*
+- 🔍 **Structured JSON parsing**: Extract and parse specific key item sections from 10-K, 10-Q, and 8-K filings into a nice-and-clean standardized JSON format.  *(filings supported: 10-K, 10-Q, 8-K)*
 
 
 ## 🚨 News
+- 2025/05: We presented EDGAR-CRAWLER and its paper at WWW 2025, which was held in Sydney. (https://dl.acm.org/doi/10.1145/3701716.3715289)
 - 2024/10: We now support **structured JSON output for 10-Q and 8-K** filings. ([@Bailefan](https://github.com/Bailefan))
 - 2023/12: We had a Lightning Talk about EDGAR-CRAWLER at the 3rd Workshop for Natural Language Processing Open Source Software [(NLP-OSS)](https://nlposs.github.io/2023/), hosted at EMNLP 2023, in Singapore.
 - 2023/01: EDGAR-CORPUS, the biggest financial NLP corpus (generated from EDGAR-CRAWLER!), is available as a HuggingFace 🤗 dataset card. See [Accompanying Resources](#Accompanying-Resources).
@@ -20,7 +21,7 @@
 - 2021/11: We presented EDGAR-CORPUS, our "parent" project that started it all, at [ECONLP 2021](https://lt3.ugent.be/econlp/) (EMNLP Workshop) at the Dominican Republic. See [Accompanying Resources](#Accompanying-Resources) for more details. An early/alpha version of EDGAR-CRAWLER was built for that project.
 
 ## Table of Contents
-- [Example Outputs](#example-outputs)
+- [Example JSON Outputs](#example-json-outputs)
 - [Install](#install)
 - [Usage](#usage)
 - [Citation](#citation)
@@ -233,10 +234,30 @@ pip install -r requirements.txt # Install requirements for edgar-crawler
 
 
 ## Citation
-An EDGAR-CRAWLER paper is on its way. Until then, please cite our relevant EDGAR-CORPUS paper published at [ECONLP@EMNLP 2021 (Punta Cana, Dominican Republic)](https://lt3.ugent.be/econlp/).
+Please cite our 2 relevant papers:
 
+1. **EDGAR-CRAWLER** @ **The Web Conference (WWW)** 2025 — Sydney, Australia (URL: https://dl.acm.org/doi/10.1145/3701716.3715289)
 ```bibtex
-@inproceedings{loukas-etal-2021-edgar-corpus-and-edgar-crawler,
+@inproceedings{loukas-etal-2025-edgar-crawler-www25,
+  author = {Loukas, Lefteris and Billert, Fabian and Fergadiotis, Manos and Malakasiotis, Prodromos and Androutsopoulos, Ion},
+  title = {{EDGAR}-{CRAWLER}: {F}rom {R}aw {W}eb {D}ocuments to {S}tructured {F}inancial {NLP} {D}atasets},
+  year = {2025},
+  isbn = {9798400713316},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3701716.3715289},
+  doi = {10.1145/3701716.3715289},
+  booktitle = {Companion Proceedings of the ACM on Web Conference 2025},
+  pages = {761–764},
+  numpages = {4},
+  keywords = {data resource, edgar, nlp, open-source software, web archive},
+  location = {Sydney NSW, Australia},
+  series = {WWW '25}
+}
+```
+2. **EDGAR-CORPUS** @ **ECONLP Workshop, EMNLP** 2021 — Punta Cana, Dominican Republic (URL: https://aclanthology.org/2021.econlp-1.2/)
+```bibtex
+@inproceedings{loukas-etal-2021-edgar-corpus,
     title = "{EDGAR}-{CORPUS}: {B}illions of {T}okens {M}ake {T}he {W}orld {G}o {R}ound",
     author = "Loukas, Lefteris  and
       Fergadiotis, Manos  and
@@ -252,8 +273,6 @@ An EDGAR-CRAWLER paper is on its way. Until then, please cite our relevant EDGAR
 }
 ```
 
-Read the EDGAR-CORPUS paper here: [https://aclanthology.org/2021.econlp-1.2/](https://aclanthology.org/2021.econlp-1.2/)
-
 ## Star History
 [![Star History Chart](https://api.star-history.com/svg?repos=nlpaueb/edgar-crawler&type=Date)](https://www.star-history.com/#lefterisloukas/edgar-crawler&Date)
 
@@ -264,7 +283,7 @@ Here are some additional resources created by using **EDGAR-CRAWLER**:
 
 - **EDGAR-W2V**: Financial Word2Vec embeddings, pre-trained on EDGAR-CORPUS [(Zenodo URL)](https://zenodo.org/record/5524358)
 
-## Feedback for EDGAR-CRAWLER
+## Feedback
 Do you have any feature request? [Tell us directly using this Google Form: (https://forms.gle/bpV8nxMqX8Sq2v5z8)!](https://forms.gle/bpV8nxMqX8Sq2v5z8)
 
 ## Contributing
