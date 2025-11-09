@@ -512,6 +512,30 @@ Examples:
             print("Please provide --user-agent or update config.json")
             sys.exit(1)
 
+    # Validate user agent is not a placeholder
+    placeholder_values = [
+        "YourName YourEmail@example.com",
+        "Your name (your email)",
+        "REPLACE_WITH_YOUR_NAME_AND_EMAIL",
+    ]
+    if user_agent in placeholder_values or not user_agent or "@" not in user_agent:
+        print("\n" + "=" * 70)
+        print("❌ ERROR: Invalid User-Agent")
+        print("=" * 70)
+        print("\nThe SEC requires a valid User-Agent with your name and email.")
+        print("This is per SEC's fair access policy:")
+        print("https://www.sec.gov/os/accessing-edgar-data")
+        print("\nYour current User-Agent:", user_agent)
+        print("\nPlease provide a valid User-Agent using one of these methods:")
+        print("\n1. Command-line argument:")
+        print('   --user-agent "Your Name your.email@university.edu"')
+        print("\n2. Update config.json:")
+        print('   "user_agent": "Your Name your.email@university.edu"')
+        print("\nExample:")
+        print('   --user-agent "Jane Smith jsmith@stanford.edu"')
+        print("\n" + "=" * 70)
+        sys.exit(1)
+
     # Create downloader instance
     downloader = ColabBatchDownloader(
         input_file=args.input,

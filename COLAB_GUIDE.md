@@ -116,7 +116,27 @@ When prompted:
 ```
 
 ```python
-# Cell 4: Authenticate with WRDS
+# Cell 4: Configure SEC User-Agent (REQUIRED!)
+import json
+
+YOUR_NAME = input("Enter your name: ")
+YOUR_EMAIL = input("Enter your email: ")
+
+user_agent = f"{YOUR_NAME} {YOUR_EMAIL}"
+
+with open('config.json', 'r') as f:
+    config = json.load(f)
+config['download_filings']['user_agent'] = user_agent
+with open('config.json', 'w') as f:
+    json.dump(config, f, indent=2)
+
+print(f"✅ User-Agent configured: {user_agent}")
+```
+
+⚠️ **CRITICAL:** The SEC requires real identification. You'll get 403 errors without this!
+
+```python
+# Cell 5: Authenticate with WRDS
 import wrds
 db = wrds.Connection(wrds_username='your_username')
 ```
@@ -169,6 +189,8 @@ print(f"Total firms: {len(df)}")
 
 **Estimated time:** 4-7 days (across 6-10 sessions)
 **Storage:** 100-200 GB
+
+⚠️ **BEFORE YOU START:** Make sure you've configured your User-Agent in the setup notebook! You'll get 403 errors without it.
 
 This is the most time-consuming phase. The script processes firms in batches and saves progress after each batch, allowing you to resume after Colab's 24-hour timeout.
 
@@ -344,6 +366,44 @@ plt.show()
 ```python
 !pip install wrds
 ```
+
+### Problem: 403 Errors When Downloading Filings
+
+**Cause:** Invalid or missing User-Agent string.
+
+**Symptoms:**
+```
+Failed downloading - Max retries exceeded
+ResponseError('too many 403 error responses')
+```
+
+**Solution:**
+
+The SEC requires you to identify yourself with your real name and email.
+
+**Option 1: Run the User-Agent configuration cell in the setup notebook**
+
+**Option 2: Manually update config.json:**
+```python
+import json
+with open('config.json', 'r') as f:
+    config = json.load(f)
+config['download_filings']['user_agent'] = "Your Name your.email@university.edu"
+with open('config.json', 'w') as f:
+    json.dump(config, f, indent=2)
+```
+
+**Option 3: Use command-line flag:**
+```python
+!python colab_batch_downloader.py \
+  --input wrds_data/wrds_identifiers.csv \
+  --user-agent "Your Name your.email@university.edu"
+```
+
+**Why this is required:**
+- Per SEC's [fair access policy](https://www.sec.gov/os/accessing-edgar-data)
+- Allows SEC to contact you if there are issues
+- Prevents abuse of their free service
 
 ### Problem: WRDS Authentication Fails
 
