@@ -73,6 +73,14 @@ This guide walks you through extracting Management's Discussion and Analysis (MD
 
 ## Setup
 
+### Important: Repository Source
+
+This workflow uses an **enhanced fork** of the original EDGAR crawler that includes WRDS integration scripts:
+- **Original repository:** `nlpaueb/edgar-crawler` (base extraction tools)
+- **Enhanced fork:** `haowenluo/edgar-crawler` (includes WRDS workflow)
+
+The setup notebook will automatically clone from the enhanced fork to ensure you have all required scripts.
+
 ### Step 1: Open Colab Setup Notebook
 
 1. Go to Google Colab: https://colab.research.google.com/
@@ -102,7 +110,8 @@ When prompted:
 
 ```python
 # Cell 3: Clone repository
-!git clone https://github.com/nlpaueb/edgar-crawler.git
+# Note: Use haowenluo fork which includes WRDS workflow scripts
+!git clone https://github.com/haowenluo/edgar-crawler.git
 %cd edgar-crawler
 ```
 
@@ -354,6 +363,24 @@ drive.mount('/content/drive', force_remount=True)
 
 # Change to correct directory
 %cd /content/drive/MyDrive/EDGAR_Project/edgar-crawler
+```
+
+### Problem: Missing Scripts (wrds_downloader.py, colab_batch_downloader.py, etc.)
+
+**Cause:** You cloned the original `nlpaueb/edgar-crawler` repository instead of the enhanced fork.
+
+**Solution:**
+```python
+# Remove the old repository
+%cd /content/drive/MyDrive/EDGAR_Project
+!rm -rf edgar-crawler
+
+# Clone the correct repository with WRDS workflow scripts
+!git clone https://github.com/haowenluo/edgar-crawler.git
+%cd edgar-crawler
+
+# Verify files exist
+!ls -la *.py | grep -E "(wrds|batch|flexible)"
 ```
 
 ### Problem: Download is Very Slow
