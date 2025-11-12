@@ -574,7 +574,7 @@ class ExtractItems:
         else:
             if "." in item_index:
                 # We need to escape the '.', otherwise it will be treated as a special character - for 8Ks
-                item_index = item_index.replace(".", "\.")
+                item_index = item_index.replace(".", r"\.")
             if item_index in roman_numeral_map:
                 # Rarely, reports use roman numerals for the item indexes. For 8-K, we assume this does not occur (due to their format - e.g. 5.01)
                 item_index = f"(?:{roman_numeral_map[item_index]}|{item_index})"
