@@ -77,9 +77,7 @@ This guide walks you through extracting Management's Discussion and Analysis (MD
 
 This workflow uses an **enhanced fork** of the original EDGAR crawler that includes WRDS integration scripts:
 - **Original repository:** `nlpaueb/edgar-crawler` (base extraction tools)
-- **Enhanced fork:** `haowenluo/edgar-crawler` (includes WRDS workflow)
-
-**Note:** The WRDS workflow scripts are currently on a feature branch (`claude/add-download-functionality-011CUuZUGtr16XsT2Ann77oP`). The setup notebook will automatically clone from this branch to ensure you have all required scripts.
+- **Enhanced fork:** `haowenluo/edgar-crawler` (includes WRDS workflow and WRDS integration scripts)
 
 ### Step 1: Open Colab Setup Notebook
 
@@ -110,8 +108,7 @@ When prompted:
 
 ```python
 # Cell 3: Clone repository
-# Note: Clone the feature branch that contains WRDS workflow scripts
-!git clone -b claude/add-download-functionality-011CUuZUGtr16XsT2Ann77oP https://github.com/haowenluo/edgar-crawler.git
+!git clone https://github.com/haowenluo/edgar-crawler.git
 %cd edgar-crawler
 ```
 
@@ -427,7 +424,7 @@ drive.mount('/content/drive', force_remount=True)
 
 ### Problem: Missing Scripts (wrds_downloader.py, colab_batch_downloader.py, etc.)
 
-**Cause:** You cloned the wrong repository or wrong branch.
+**Cause:** You cloned the wrong repository.
 
 **Solution:**
 ```python
@@ -435,8 +432,8 @@ drive.mount('/content/drive', force_remount=True)
 %cd /content/drive/MyDrive/EDGAR_Project
 !rm -rf edgar-crawler
 
-# Clone the correct branch with WRDS workflow scripts
-!git clone -b claude/add-download-functionality-011CUuZUGtr16XsT2Ann77oP https://github.com/haowenluo/edgar-crawler.git
+# Clone the correct repository with WRDS workflow scripts
+!git clone https://github.com/haowenluo/edgar-crawler.git
 %cd edgar-crawler
 
 # Verify files exist
