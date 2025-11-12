@@ -991,9 +991,26 @@ class ExtractItems:
             Any: The extracted JSON content
         """
 
+        # First try direct path (original behavior)
         absolute_filename = os.path.join(
             self.raw_files_folder, filing_metadata["Type"], filing_metadata["filename"]
         )
+
+        # If file doesn't exist, search in year subdirectories
+        if not os.path.exists(absolute_filename):
+            type_dir = os.path.join(self.raw_files_folder, filing_metadata["Type"])
+            found = False
+            # Walk through subdirectories to find the file
+            for root, dirs, files in os.walk(type_dir):
+                if filing_metadata["filename"] in files:
+                    absolute_filename = os.path.join(root, filing_metadata["filename"])
+                    found = True
+                    break
+
+            if not found:
+                raise FileNotFoundError(
+                    f"Could not find {filing_metadata['filename']} in {type_dir} or its subdirectories"
+                )
 
         # Read the content of the file
         with open(absolute_filename, "r", errors="backslashreplace") as file:
