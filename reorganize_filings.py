@@ -181,8 +181,10 @@ class FilingReorganizer:
 
         print(f"   Found {len(type_df):,} {filing_type} filings in metadata")
 
-        # Extract year from filing_date
-        type_df['year'] = pd.to_datetime(type_df['filing_date']).dt.year.astype(str)
+        # Extract year from Filing Date
+        # Try both 'Filing Date' and 'filing_date' for compatibility
+        date_col = 'Filing Date' if 'Filing Date' in type_df.columns else 'filing_date'
+        type_df['year'] = pd.to_datetime(type_df[date_col]).dt.year.astype(str)
 
         # Group by year
         year_groups = type_df.groupby('year')
