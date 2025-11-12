@@ -43,6 +43,32 @@ class DownloadManager:
         self.wrds_file = "wrds_data/wrds_identifiers.csv"
         self.progress_file = "logs/download_progress.csv"
 
+    def _count_files_recursive(self, dir_path, extension=None):
+        """
+        Count files recursively in a directory.
+        Handles year-based subdirectory structure.
+
+        Args:
+            dir_path: Directory to count files in
+            extension: Optional file extension filter (e.g., '.json')
+
+        Returns:
+            int: Total number of files
+        """
+        count = 0
+        try:
+            for entry in os.scandir(dir_path):
+                if entry.is_file():
+                    if extension is None or entry.name.endswith(extension):
+                        count += 1
+                elif entry.is_dir():
+                    # Recursively count files in subdirectories
+                    count += self._count_files_recursive(entry.path, extension)
+        except OSError as e:
+            # If we can't list the directory, use metadata as fallback
+            pass
+        return count
+
     def check_setup(self):
         """Check if necessary files and directories exist"""
         print("Checking setup...\n")
@@ -145,13 +171,7 @@ class DownloadManager:
             for filing_type in ["10-K", "10-Q", "8-K"]:
                 dir_path = os.path.join(self.raw_filings_dir, filing_type)
                 if os.path.exists(dir_path):
-                    count = len(
-                        [
-                            f
-                            for f in os.listdir(dir_path)
-                            if os.path.isfile(os.path.join(dir_path, f))
-                        ]
-                    )
+                    count = self._count_files_recursive(dir_path)
                     print(f"   {filing_type}: {count:,} files")
 
         # EXTRACTED filings count
@@ -160,13 +180,7 @@ class DownloadManager:
             for filing_type in ["10-K", "10-Q", "8-K"]:
                 dir_path = os.path.join(self.extracted_filings_dir, filing_type)
                 if os.path.exists(dir_path):
-                    count = len(
-                        [
-                            f
-                            for f in os.listdir(dir_path)
-                            if f.endswith(".json")
-                        ]
-                    )
+                    count = self._count_files_recursive(dir_path, extension=".json")
                     print(f"   {filing_type}: {count:,} JSON files")
 
         # Batch progress
