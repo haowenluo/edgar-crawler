@@ -153,26 +153,51 @@ class FlexibleExtractor:
             print(f"❌ Error updating config: {e}")
             raise
 
+  
     def organize_output(self):
-        """
-        Organize extracted files into custom output directory if specified
-        """
-        if self.output_dir is None:
-            return
+    """
+    Organize extracted files into custom output directory if specified
+    """
+    if self.output_dir is None:
+        return
 
-        print(f"\n📁 Organizing output files...")
+    print(f"\n📁 Organizing output files...")
 
-        # Original output directory
-        original_dir = "datasets/EXTRACTED_FILINGS"
+    import shutil
 
-        # Create custom output directory
-        custom_dir = f"datasets/{self.output_dir}"
-        os.makedirs(custom_dir, exist_ok=True)
+    # Original output directory
+    original_dir = "datasets/EXTRACTED_FILINGS"
 
-        # Move/copy files to custom directory
-        # This is a simplified version - in practice, you might want more sophisticated organization
+    # Create custom output directory
+    custom_dir = f"datasets/{self.output_dir}"
+    os.makedirs(custom_dir, exist_ok=True)
 
-        print(f"✅ Output organized in {custom_dir}")
+    # Copy files from each filing type folder to custom directory
+    total_copied = 0
+    for filing_type in self.filing_types:
+        source_dir = os.path.join(original_dir, filing_type)
+
+        if not os.path.exists(source_dir):
+            print(f"   ⚠️  Source directory not found: {source_dir}")
+            continue
+
+        # Get all JSON files in source directory
+        json_files = [f for f in os.listdir(source_dir) if f.endswith('.json')]
+
+        # Copy each JSON file to custom directory
+        for filename in json_files:
+            source_path = os.path.join(source_dir, filename)
+            dest_path = os.path.join(custom_dir, filename)
+
+            # Copy file (skip if already exists)
+            if not os.path.exists(dest_path):
+                shutil.copy2(source_path, dest_path)
+                total_copied += 1
+
+        print(f"   ✅ Copied {len(json_files)} {filing_type} files")
+
+    print(f"\n✅ Output organized in {custom_dir}")
+    print(f"   Total files copied: {total_copied}")
 
     def generate_item_summary(self):
         """Display what items will be extracted and their descriptions"""
