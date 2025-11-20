@@ -69,6 +69,51 @@ class DownloadManager:
             pass
         return count
 
+    def _count_unique_filings(self, dir_path):
+        """
+        Count unique filings (not all files) in a directory.
+        Each filing is identified by its unique accession number.
+
+        Filename pattern: {CIK}_{filing_type}_{year}_{accession_num}.{ext}
+
+        Args:
+            dir_path: Directory to count filings in
+
+        Returns:
+            int: Number of unique filings
+        """
+        unique_accessions = set()
+        try:
+            for entry in os.scandir(dir_path):
+                if entry.is_file():
+                    # Extract accession number from filename
+                    # Format: {CIK}_{type}_{year}_{accession}.{ext}
+                    parts = entry.name.rsplit('.', 1)[0].split('_')
+                    if len(parts) >= 4:
+                        accession = parts[-1]  # Last part is accession number
+                        unique_accessions.add(accession)
+                elif entry.is_dir():
+                    # Recursively process subdirectories (year folders)
+                    unique_accessions.update(self._get_accessions_recursive(entry.path))
+        except OSError:
+            pass
+        return len(unique_accessions)
+
+    def _get_accessions_recursive(self, dir_path):
+        """Helper to recursively get all unique accession numbers"""
+        accessions = set()
+        try:
+            for entry in os.scandir(dir_path):
+                if entry.is_file():
+                    parts = entry.name.rsplit('.', 1)[0].split('_')
+                    if len(parts) >= 4:
+                        accessions.add(parts[-1])
+                elif entry.is_dir():
+                    accessions.update(self._get_accessions_recursive(entry.path))
+        except OSError:
+            pass
+        return accessions
+
     def check_setup(self):
         """Check if necessary files and directories exist"""
         print("Checking setup...\n")
@@ -134,7 +179,8 @@ class DownloadManager:
 
         # Metadata summary
         if os.path.exists(self.metadata_file):
-            print("\n📊 Downloaded Filings:")
+            print("\n📊 Downloaded Filings (from metadata):")
+            print("   [Successfully downloaded and recorded in FILINGS_METADATA.csv]")
             try:
                 metadata_df = pd.read_csv(self.metadata_file)
                 print(f"   Total filings: {len(metadata_df):,}")
@@ -166,13 +212,20 @@ class DownloadManager:
                 print(f"   ⚠️  Could not read metadata: {e}")
 
         # RAW filings count
-        print("\n📁 RAW Filings:")
+        print("\n📁 RAW Filings (on disk):")
+        print("   [Shows files in RAW_FILINGS directory]")
         if os.path.exists(self.raw_filings_dir):
             for filing_type in ["10-K", "10-Q", "8-K"]:
                 dir_path = os.path.join(self.raw_filings_dir, filing_type)
                 if os.path.exists(dir_path):
-                    count = self._count_files_recursive(dir_path)
-                    print(f"   {filing_type}: {count:,} files")
+                    total_files = self._count_files_recursive(dir_path)
+                    unique_filings = self._count_unique_filings(dir_path)
+
+                    if unique_filings > 0:
+                        files_per_filing = total_files / unique_filings
+                        print(f"   {filing_type}: {unique_filings:,} unique filings ({total_files:,} total files, ~{files_per_filing:.1f} files/filing)")
+                    else:
+                        print(f"   {filing_type}: {total_files:,} total files")
 
         # EXTRACTED filings count
         print("\n📄 EXTRACTED Filings:")
@@ -202,6 +255,32 @@ class DownloadManager:
 
             except Exception as e:
                 print(f"   ⚠️  Could not read progress: {e}")
+
+        # Compare metadata vs disk
+        if os.path.exists(self.metadata_file) and os.path.exists(self.raw_filings_dir):
+            print("\n🔍 Metadata vs Disk Comparison:")
+            try:
+                metadata_df = pd.read_csv(self.metadata_file)
+                for filing_type in ["10-K", "10-Q", "8-K"]:
+                    metadata_count = len(metadata_df[metadata_df["Type"] == filing_type]) if "Type" in metadata_df.columns else 0
+                    dir_path = os.path.join(self.raw_filings_dir, filing_type)
+                    if os.path.exists(dir_path):
+                        disk_count = self._count_unique_filings(dir_path)
+                        diff = disk_count - metadata_count
+                        status = "✅" if diff == 0 else ("⚠️" if abs(diff) < 100 else "❌")
+
+                        if metadata_count > 0 or disk_count > 0:
+                            print(f"   {status} {filing_type}: Metadata={metadata_count:,}, Disk={disk_count:,} (diff: {diff:+,})")
+            except Exception as e:
+                print(f"   ⚠️  Could not compare: {e}")
+
+        # Add explanatory notes
+        print("\n" + "ℹ️  Notes:")
+        print("   • 'Downloaded Filings' = Successfully downloaded filings in metadata")
+        print("   • 'RAW Filings' = Files on disk (unique filings + total files)")
+        print("   • Metadata vs Disk shows if counts match (ideally should be equal)")
+        print("   • If Disk > Metadata: Extra files on disk (duplicates/failed downloads)")
+        print("   • If Metadata > Disk: Missing files (deleted or moved)")
 
         print("\n" + "=" * 70)
 
