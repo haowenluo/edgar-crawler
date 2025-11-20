@@ -153,51 +153,51 @@ class FlexibleExtractor:
             print(f"❌ Error updating config: {e}")
             raise
 
-  
+
     def organize_output(self):
-    """
-    Organize extracted files into custom output directory if specified
-    """
-    if self.output_dir is None:
-        return
+        """
+        Organize extracted files into custom output directory if specified
+        """
+        if self.output_dir is None:
+            return
 
-    print(f"\n📁 Organizing output files...")
+        print(f"\n📁 Organizing output files...")
 
-    import shutil
+        import shutil
 
-    # Original output directory
-    original_dir = "datasets/EXTRACTED_FILINGS"
+        # Original output directory
+        original_dir = "datasets/EXTRACTED_FILINGS"
 
-    # Create custom output directory
-    custom_dir = f"datasets/{self.output_dir}"
-    os.makedirs(custom_dir, exist_ok=True)
+        # Create custom output directory
+        custom_dir = f"datasets/{self.output_dir}"
+        os.makedirs(custom_dir, exist_ok=True)
 
-    # Copy files from each filing type folder to custom directory
-    total_copied = 0
-    for filing_type in self.filing_types:
-        source_dir = os.path.join(original_dir, filing_type)
+        # Copy files from each filing type folder to custom directory
+        total_copied = 0
+        for filing_type in self.filing_types:
+            source_dir = os.path.join(original_dir, filing_type)
 
-        if not os.path.exists(source_dir):
-            print(f"   ⚠️  Source directory not found: {source_dir}")
-            continue
+            if not os.path.exists(source_dir):
+                print(f"   ⚠️  Source directory not found: {source_dir}")
+                continue
 
-        # Get all JSON files in source directory
-        json_files = [f for f in os.listdir(source_dir) if f.endswith('.json')]
+            # Get all JSON files in source directory
+            json_files = [f for f in os.listdir(source_dir) if f.endswith('.json')]
 
-        # Copy each JSON file to custom directory
-        for filename in json_files:
-            source_path = os.path.join(source_dir, filename)
-            dest_path = os.path.join(custom_dir, filename)
+            # Copy each JSON file to custom directory
+            for filename in json_files:
+                source_path = os.path.join(source_dir, filename)
+                dest_path = os.path.join(custom_dir, filename)
 
-            # Copy file (skip if already exists)
-            if not os.path.exists(dest_path):
-                shutil.copy2(source_path, dest_path)
-                total_copied += 1
+                # Copy file (skip if already exists)
+                if not os.path.exists(dest_path):
+                    shutil.copy2(source_path, dest_path)
+                    total_copied += 1
 
-        print(f"   ✅ Copied {len(json_files)} {filing_type} files")
+            print(f"   ✅ Copied {len(json_files)} {filing_type} files")
 
-    print(f"\n✅ Output organized in {custom_dir}")
-    print(f"   Total files copied: {total_copied}")
+        print(f"\n✅ Output organized in {custom_dir}")
+        print(f"   Total files copied: {total_copied}")
 
     def generate_item_summary(self):
         """Display what items will be extracted and their descriptions"""
