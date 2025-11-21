@@ -105,7 +105,8 @@ Special items (also called nonrecurring or unusual items) are one-time or infreq
 - Asset impairment charges
 - Legal settlements and litigation costs
 - Discontinued operations
-- Acquisition-related costs
+- Merger and acquisition-related expenses (transaction costs, integration costs, advisory fees)
+- Gains or losses from asset sales and divestitures
 
 **How it works:**
 1. Scans Item 8 (Financial Statements) and optionally Item 7 (MD&A)
@@ -116,7 +117,7 @@ Special items (also called nonrecurring or unusual items) are one-time or infreq
 
 **Output Structure:**
 Each special item in the `special_items` array contains:
-- `type`: Category (restructuring, impairment, litigation, discontinued_ops, unusual, other)
+- `type`: Category (restructuring, impairment, litigation, discontinued_ops, acquisition, asset_sale, unusual, other)
 - `keywords_matched`: List of matched keywords
 - `confidence`: Confidence score (0.0-1.0)
 - `source_section`: Source item (item_7 or item_8)
@@ -288,8 +289,10 @@ pip install -r requirements.txt # Install requirements for edgar-crawler
         - `impairment`: Keywords for asset impairments (e.g., "impairment", "write-down", "goodwill impairment")
         - `litigation`: Keywords for legal settlements (e.g., "litigation", "settlement", "legal proceeding")
         - `discontinued_ops`: Keywords for discontinued operations (e.g., "discontinued operation", "disposal of business")
+        - `acquisition`: Keywords for M&A-related expenses (e.g., "acquisition", "merger", "transaction costs", "integration costs", "M&A")
+        - `asset_sale`: Keywords for asset sales and divestitures (e.g., "gain on sale", "loss on sale", "asset disposal", "divestiture")
         - `unusual`: Keywords for unusual/nonrecurring items (e.g., "one-time", "special charge", "non-gaap adjustment")
-        - `other`: Keywords for other special items (e.g., "debt extinguishment", "pension settlement")
+        - `other`: Keywords for other special items (e.g., "debt extinguishment", "pension settlement", "foreign exchange")
 
 - To download the raw financial reports from EDGAR, run `python download_filings.py`.
 - To clean and extract specific item sections from already-downloaded documents, run `python extract_items.py`.

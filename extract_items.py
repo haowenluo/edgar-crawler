@@ -1060,8 +1060,10 @@ class ExtractItems:
                 # Base confidence from keyword strength
                 if category in ['restructuring', 'impairment', 'discontinued_ops']:
                     confidence += 0.4  # Strong indicators
-                elif category in ['litigation', 'unusual']:
+                elif category in ['litigation', 'unusual', 'acquisition']:
                     confidence += 0.3  # Medium indicators
+                elif category in ['asset_sale']:
+                    confidence += 0.25  # Medium-weak indicators (gains/losses are common)
                 else:
                     confidence += 0.2  # Weaker indicators
 

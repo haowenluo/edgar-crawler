@@ -332,6 +332,7 @@ class TestExtractItems(unittest.TestCase):
         The company recorded restructuring charges of $125.3 million in 2023.
         This includes severance costs of ($23.5 million) and facility closure costs.
         See Note 12 for additional details. Asset impairment charges totaled 450 million.
+        Acquisition-related transaction costs were $75 million. Gain on sale of assets was $30 million.
         """
 
         amounts = ExtractItems.extract_monetary_amounts(test_text)
@@ -362,6 +363,8 @@ class TestExtractItems(unittest.TestCase):
             'keywords': {
                 'restructuring': ['restructuring', 'severance', 'facility closure'],
                 'impairment': ['impairment', 'asset impairment'],
+                'acquisition': ['acquisition', 'transaction costs', 'M&A'],
+                'asset_sale': ['gain on sale', 'loss on sale', 'asset disposal'],
             }
         }
 
@@ -376,6 +379,10 @@ class TestExtractItems(unittest.TestCase):
         workforce reduction and facility closure costs. See Note 12.
 
         Asset impairment charges of $450 million were recorded in Q4 2023.
+
+        Acquisition-related transaction costs totaled $75 million for the merger with XYZ Corp.
+
+        The company recorded a gain on sale of manufacturing facility of $30 million.
         </body></html>
         """
 

@@ -30,8 +30,10 @@
 				"impairment": ["impairment", "write-down", "write-off", "write down", "write off", "goodwill impairment", "asset impairment"],
 				"litigation": ["litigation", "settlement", "legal proceeding", "legal settlement", "jury award", "arbitration"],
 				"discontinued_ops": ["discontinued operation", "disposal of business", "disposal group", "held for sale"],
+				"acquisition": ["acquisition", "merger", "business combination", "transaction costs", "integration costs", "deal costs", "M&A", "acquisition-related", "merger-related", "earnout", "purchase price adjustment", "advisory fees"],
+				"asset_sale": ["gain on sale", "loss on sale", "asset disposal", "divestiture", "sale of assets", "disposal proceeds", "gain on disposal", "loss on disposal"],
 				"unusual": ["unusual item", "nonrecurring", "non-recurring", "one-time", "special charge", "special item", "items impacting comparability", "non-gaap adjustment", "non-operating"],
-				"other": ["other income", "other expense", "gain on sale", "loss on sale", "debt extinguishment", "pension settlement"]
+				"other": ["other income", "other expense", "debt extinguishment", "pension settlement", "foreign exchange", "early retirement"]
 			}
 		}
 	}
