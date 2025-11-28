@@ -1453,9 +1453,33 @@ class ExtractItems:
         self.determine_items_to_extract(filing_metadata)
 
         # Create the absolute path for the JSON file
-        absolute_json_filename = os.path.join(
-            self.extracted_files_folder, filing_metadata["Type"], json_filename
-        )
+        # Progressive reorganization: organize by year to avoid Drive limits
+        filing_type_folder = os.path.join(self.extracted_files_folder, filing_metadata["Type"])
+
+        # Extract year from filename and create year subfolder
+        year_match = re.search(r'_10K_(\d{4})_', json_filename)
+
+        if year_match:
+            year_subfolder = year_match.group(1)
+            year_folder = os.path.join(filing_type_folder, year_subfolder)
+            os.makedirs(year_folder, exist_ok=True)
+            absolute_json_filename = os.path.join(year_folder, json_filename)
+        else:
+            # Fallback: use root if year not found
+            absolute_json_filename = os.path.join(filing_type_folder, json_filename)
+
+        # Check if file exists in OLD location (root) - move it!
+        old_location = os.path.join(filing_type_folder, json_filename)
+        if year_match and os.path.exists(old_location) and old_location != absolute_json_filename:
+            try:
+                # Move from old location to year subfolder
+                os.rename(old_location, absolute_json_filename)
+                print(f"📦 Moved: {json_filename} → {year_subfolder}/")
+                if self.skip_extracted_filings:
+                    return 0  # Already extracted, just moved
+            except Exception as e:
+                # If move fails, continue with extraction
+                pass
 
         # Skip processing if the extracted JSON file already exists and skip flag is enabled
         if self.skip_extracted_filings and os.path.exists(absolute_json_filename):
