@@ -95,11 +95,9 @@ class SimpleExtractor:
 
     def extract_item(self, text, item_number):
         """Extract a specific item from the text"""
-        # Item patterns for 10-K
-        item_name = item_list_10k.get(item_number, f"Item {item_number}")
-
         # Build regex pattern to find item
-        item_pattern = rf"(?:item\s*{item_number}[:\.\s]|{re.escape(item_name)})"
+        # Match "Item X" or "Item X." or "Item X:" patterns
+        item_pattern = rf"item\s*{re.escape(item_number)}[\s:\.]"
 
         # Find all matches
         matches = list(re.finditer(item_pattern, text, self.regex_flags))
