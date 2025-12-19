@@ -1,0 +1,21 @@
+Next steps
+Process more years: update YEAR_END in year_by_year_extraction.py:
+   YEAR_START = 2025   YEAR_END = 2009  # Change from 2024 to 2009 to process 2025→2010
+Check your extracted files:
+Location: C:\Users\luh\OneDrive - purdue.edu\10k extraction\extracted files\MDA and item1\2025\
+Format: JSON files with item_1, item_1a, and item_7 fields
+
+how to change year:
+Recommended: Process only 2024
+
+Change the configuration to:
+
+YEAR_START = 2024YEAR_END = 2023  # This will process only 2024
+
+
+This processes only 2024.
+
+after changed year, do following
+conda activate base
+cd "c:\Users\luh\OneDrive - Purdue University Fort Wayne\Documents\edgar-crawler\local processing"
+python check_dependencies.py

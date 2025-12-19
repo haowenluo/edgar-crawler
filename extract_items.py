@@ -11,7 +11,12 @@ import cssutils
 import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
-from pathos.pools import ProcessPool
+try:
+    from pathos.pools import ProcessPool
+    PATHOS_AVAILABLE = True
+except ImportError:
+    PATHOS_AVAILABLE = False
+    ProcessPool = None
 from tqdm import tqdm
 
 from __init__ import DATASET_DIR
@@ -1264,9 +1269,21 @@ class ExtractItems:
                     found = True
                     break
 
+            # If still not found, try year-based structure: raw_files_folder/year/filename
+            if not found:
+                for root, dirs, files in os.walk(self.raw_files_folder):
+                    # Check if this is a year directory (numeric name like "2023", "2024", etc.)
+                    basename = os.path.basename(root)
+                    if basename.isdigit() and len(basename) == 4:  # Year format: YYYY
+                        potential_file = os.path.join(root, filing_metadata["filename"])
+                        if os.path.exists(potential_file):
+                            absolute_filename = potential_file
+                            found = True
+                            break
+
             if not found:
                 raise FileNotFoundError(
-                    f"Could not find {filing_metadata['filename']} in {type_dir} or its subdirectories"
+                    f"Could not find {filing_metadata['filename']} in {type_dir} or its subdirectories, or in year-based directories"
                 )
 
         # Read the content of the file
@@ -1565,11 +1582,21 @@ def main() -> None:
 
     list_of_series = list(zip(*filings_metadata_df.iterrows()))[1]
 
-    # Process filings in parallel using a process pool
-    with ProcessPool(processes=1) as pool:
+    # Process filings in parallel using a process pool (if available) or sequentially
+    if PATHOS_AVAILABLE:
+        with ProcessPool(processes=1) as pool:
+            processed = list(
+                tqdm(
+                    pool.imap(extraction.process_filing, list_of_series),
+                    total=len(list_of_series),
+                    ncols=100,
+                )
+            )
+    else:
+        # Fallback to sequential processing if pathos is not available
         processed = list(
             tqdm(
-                pool.imap(extraction.process_filing, list_of_series),
+                (extraction.process_filing(series) for series in list_of_series),
                 total=len(list_of_series),
                 ncols=100,
             )
