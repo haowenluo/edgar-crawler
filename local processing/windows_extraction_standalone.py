@@ -94,42 +94,73 @@ class SimpleExtractor:
         return '\n'.join(filtered_lines)
 
     def extract_item(self, text, item_number):
-        """Extract a specific item from the text"""
-        # Build regex pattern to find item
-        # Match "Item X" or "Item X." or "Item X:" patterns
-        item_pattern = rf"item\s*{re.escape(item_number)}[\s:\.]"
+        """Extract a specific item from the text - IMPROVED to skip ToC"""
+        # Build regex pattern to find item with more specific matching
+        # Look for items that appear at the start of a line (not in tables/ToC)
+        item_pattern = rf"\n\s*item\s*{re.escape(item_number)}[\s:\.\-]"
 
-        # Find all matches
+        # Find all matches of the current item
         matches = list(re.finditer(item_pattern, text, self.regex_flags))
 
         if not matches:
             return ""
 
-        # Get first match position
-        start_pos = matches[0].start()
+        # Build list of next possible items to find section boundaries
+        # For Item 1 -> look for 1A, 1B, 1C, 2
+        # For Item 1A -> look for 1B, 1C, 2
+        # For Item 7 -> look for 7A, 8
+        current_item_num = item_number.replace('A', '').replace('B', '').replace('C', '')
 
-        # Find next item to get end position
-        # Look for "Item X" where X is any number greater than current item
-        next_item_pattern = r"item\s*(\d+)[:\.\s]"
-        next_matches = re.finditer(next_item_pattern, text[start_pos+10:], self.regex_flags)
-
-        end_pos = len(text)
-        current_item_num = int(item_number.replace('A', '').replace('B', '').replace('C', '')) if item_number[0].isdigit() else 99
-
-        for match in next_matches:
+        next_items = []
+        if item_number == "1":
+            next_items = ["1A", "1B", "1C", "2"]
+        elif item_number == "1A":
+            next_items = ["1B", "1C", "2"]
+        elif item_number == "1B":
+            next_items = ["1C", "2"]
+        elif item_number == "1C":
+            next_items = ["2"]
+        elif item_number == "7":
+            next_items = ["7A", "8"]
+        elif item_number == "7A":
+            next_items = ["8"]
+        else:
+            # For other items, just look for the next number
             try:
-                next_num_str = match.group(1)
-                next_num = int(next_num_str.replace('A', '').replace('B', '').replace('C', ''))
-                if next_num > current_item_num:
-                    end_pos = start_pos + 10 + match.start()
-                    break
+                next_num = int(current_item_num) + 1
+                next_items = [str(next_num)]
             except:
-                continue
+                next_items = []
 
-        # Extract text between start and end
-        item_text = text[start_pos:end_pos]
+        # Try to find the longest section (actual content, not ToC)
+        best_section = ""
+        max_length = 0
 
-        return item_text.strip()
+        for match in matches:
+            start_pos = match.start()
+
+            # Find the end of this section by looking for next items
+            end_pos = len(text)
+
+            for next_item in next_items:
+                next_pattern = rf"\n\s*item\s*{re.escape(next_item)}[\s:\.\-]"
+                next_match = re.search(next_pattern, text[start_pos+100:], self.regex_flags)
+
+                if next_match:
+                    end_pos = start_pos + 100 + next_match.start()
+                    break
+
+            # Extract this section
+            section_text = text[start_pos:end_pos].strip()
+            section_length = len(section_text)
+
+            # Keep the longest section (this skips ToC which is usually short)
+            # Require minimum length of 500 chars to avoid ToC entries
+            if section_length > max_length and section_length > 500:
+                max_length = section_length
+                best_section = section_text
+
+        return best_section
 
     def extract_items_from_filing(self, raw_html):
         """Extract all requested items from a filing"""
