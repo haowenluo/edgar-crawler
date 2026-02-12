@@ -1,21 +1,89 @@
-Next steps
-Process more years: update YEAR_END in year_by_year_extraction.py:
-   YEAR_START = 2025   YEAR_END = 2009  # Change from 2024 to 2009 to process 2025→2010
-Check your extracted files:
-Location: C:\Users\luh\OneDrive - purdue.edu\10k extraction\extracted files\MDA and item1\2025\
-Format: JSON files with item_1, item_1a, and item_7 fields
+================================================================================
+RESUME EXTRACTION - STEP-BY-STEP GUIDE
+================================================================================
 
-how to change year:
-Recommended: Process only 2024
+CURRENT STATUS:
+- Year 2025: COMPLETED (609/610 files extracted)
+- Ready to process: Year 2024
 
-Change the configuration to:
+================================================================================
+STEP 1: Update Year Configuration
+================================================================================
 
-YEAR_START = 2024YEAR_END = 2023  # This will process only 2024
+Open: year_by_year_extraction.py
+Find lines 47-48 and update:
 
+    YEAR_START = 2024
+    YEAR_END = 2023  # This will process only 2024
 
-This processes only 2024.
+To process multiple years at once:
+    YEAR_START = 2024
+    YEAR_END = 2020  # This will process 2024, 2023, 2022, 2021
 
-after changed year, do following
-conda activate base
-cd "c:\Users\luh\OneDrive - Purdue University Fort Wayne\Documents\edgar-crawler\local processing"
-python check_dependencies.py
+To process all remaining years (2024 → 2010):
+    YEAR_START = 2024
+    YEAR_END = 2009  # This will process 2024 down to 2010
+
+================================================================================
+STEP 2: Verify Dependencies (Optional but Recommended)
+================================================================================
+
+Open PowerShell/Command Prompt and run:
+
+    conda activate base
+    cd "c:\Users\luh\OneDrive - Purdue University Fort Wayne\Documents\edgar-crawler\local processing"
+    python check_dependencies.py
+
+Expected output: "All dependencies are installed!" and "SUCCESS: ExtractItems can be imported!"
+
+================================================================================
+STEP 3: Run Extraction
+================================================================================
+
+Option A - Using batch file (Easiest):
+    Double-click: run_extraction.bat
+
+Option B - Manual command:
+    conda activate base
+    cd "c:\Users\luh\OneDrive - Purdue University Fort Wayne\Documents\edgar-crawler\local processing"
+    python year_by_year_extraction.py
+
+================================================================================
+STEP 4: Monitor Progress
+================================================================================
+
+The script will:
+- Show progress bar (e.g., "Extracting 2024: 45%|###     | 275/610")
+- Display statistics after completion
+- Skip already-extracted files automatically
+- Show errors if any files fail
+
+Expected time: ~8-10 minutes per year (depending on number of files)
+
+================================================================================
+STEP 5: Verify Results
+================================================================================
+
+Check extracted files location:
+    C:\Users\luh\OneDrive - purdue.edu\10k extraction\extracted files\MDA and item1\{year}\
+
+Each JSON file contains:
+    - cik: Company CIK number
+    - company: Company name
+    - filing_type: "10-K"
+    - year: Filing year
+    - item_1: Business description
+    - item_1a: Risk factors
+    - item_7: MD&A (Management Discussion & Analysis)
+
+================================================================================
+TIPS
+================================================================================
+
+1. Resume anytime: The script automatically skips already-extracted files
+2. Process one year at a time: Set YEAR_END = YEAR_START - 1
+3. Process multiple years: Set YEAR_END to the oldest year you want
+4. Check progress: Count files in output directory
+5. Stop safely: Press Ctrl+C (won't corrupt files)
+
+================================================================================

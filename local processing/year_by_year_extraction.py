@@ -44,8 +44,8 @@ REMOVE_TABLES = True
 SKIP_EXTRACTED = True
 
 # Year range (newest to oldest)
-YEAR_START = 2024
-YEAR_END = 2023  # Process only 2025 for testing (set to 2009 for full range 2025→2010)
+YEAR_START = 2023
+YEAR_END = 2018 # Process only 2024 (set to 2009 for full range 2024→2010)
 
 # Processing options
 CONFIRM_BEFORE_NEXT_YEAR = False  # Set to True to confirm before each year
